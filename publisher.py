@@ -1,11 +1,9 @@
 import requests
-from typing import Dict, Any, Optional
+from typing import Optional
 import xml.etree.ElementTree as ET
 from datetime import datetime
-import os
 from pathlib import Path
 import base64
-from io import BytesIO
 
 class PodcastPublisher:
     def __init__(self, github_repo: str, github_token: str):

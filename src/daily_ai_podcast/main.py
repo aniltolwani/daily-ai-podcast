@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from typing import Dict, Any, List
 from dotenv import load_dotenv
 import uvicorn
+from daily_ai_podcast.content_generator import generate_audio_summaries
 
 import logging
 
@@ -45,14 +46,11 @@ async def process_email_webhook(data: Dict[str, Any]) -> Dict[str, Any]:
     # Log paper links for debugging
     print(f"Extracted paper links: {paper_links}")
 
-    # Return paper links for testing
-    return {"status": "success", "paper_links": paper_links}
 
-    # Commented out the rest of the code for now
-    # # Generate summaries
-    # audio_files = generate_audio_summaries(paper_links)
-    # if not audio_files:
-    #     return {"status": "success", "message": "No audio files generated"}
+    # Generate summaries
+    audio_files = generate_audio_summaries(paper_links)
+
+    return {"status": "success", "paper_links": paper_links, "audio_files": audio_files}
 
     # # Merge audio files
     # final_podcast = merge_audio_files(audio_files)

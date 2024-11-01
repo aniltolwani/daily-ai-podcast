@@ -22,7 +22,5 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/daily_ai_podcast"]
 
-[tool.hatch.dev-dependencies]
-test = [
-    {path = ".", develop = true}
-]
+[project.scripts]
+daily-ai-podcast = "daily_ai_podcast.main:main"

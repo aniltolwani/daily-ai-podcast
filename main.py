@@ -36,33 +36,40 @@ async def process_email_webhook(data: Dict[str, Any]) -> Dict[str, Any]:
     if not paper_links:
         return {"status": "success", "message": "No paper links found"}
 
-    # Generate summaries
-    audio_files = generate_audio_summaries(paper_links)
-    if not audio_files:
-        return {"status": "success", "message": "No audio files generated"}
+    # Log paper links for debugging
+    print(f"Extracted paper links: {paper_links}")
 
-    # Merge audio files
-    final_podcast = merge_audio_files(audio_files)
+    # Return paper links for testing
+    return {"status": "success", "paper_links": paper_links}
 
-    # Initialize publisher
-    publisher = PodcastPublisher(
-        github_repo=os.getenv("GITHUB_REPO"),
-        github_token=os.getenv("GITHUB_TOKEN")
-    )
+    # Commented out the rest of the code for now
+    # # Generate summaries
+    # audio_files = generate_audio_summaries(paper_links)
+    # if not audio_files:
+    #     return {"status": "success", "message": "No audio files generated"}
 
-    # Generate title and description
-    title = f"AI Papers Summary - {datetime.now().strftime('%B %d, %Y')}"
-    description = f"Summary of {len(paper_links)} AI research papers from arXiv"
+    # # Merge audio files
+    # final_podcast = merge_audio_files(audio_files)
 
-    # Publish podcast
-    success = publisher.publish_podcast(final_podcast, title, description)
+    # # Initialize publisher
+    # publisher = PodcastPublisher(
+    #     github_repo=os.getenv("GITHUB_REPO"),
+    #     github_token=os.getenv("GITHUB_TOKEN")
+    # )
+
+    # # Generate title and description
+    # title = f"AI Papers Summary - {datetime.now().strftime('%B %d, %Y')}"
+    # description = f"Summary of {len(paper_links)} AI research papers from arXiv"
+
+    # # Publish podcast
+    # success = publisher.publish_podcast(final_podcast, title, description)
     
-    return {
-        "status": "success" if success else "error",
-        "message": "Podcast published" if success else "Failed to publish podcast",
-        "paper_count": len(paper_links),
-        "audio_files": len(audio_files)
-    }
+    # return {
+    #     "status": "success" if success else "error",
+    #     "message": "Podcast published" if success else "Failed to publish podcast",
+    #     "paper_count": len(paper_links),
+    #     "audio_files": len(audio_files)
+    # }
 
 def extract_paper_links(email_body: str) -> List[str]:
     """

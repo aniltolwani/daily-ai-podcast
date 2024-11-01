@@ -1,5 +1,5 @@
 [project]
-name = "daily-ai-podcast"
+name = "daily_ai_podcast"
 version = "0.1.0"
 description = "Generate a daily podcast of the top AI papers using NotebookLM"
 requires-python = ">=3.10"

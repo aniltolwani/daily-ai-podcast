@@ -81,5 +81,8 @@ def extract_paper_links(email_body: str) -> List[str]:
     arxiv_pattern = r'https?://arxiv\.org/(?:abs|pdf)/\d+\.\d+(?:v\d+)?'
     return list(set(re.findall(arxiv_pattern, email_body)))
 
-if __name__ == "__main__":
+def main():
     uvicorn.run(app, host="0.0.0.0", port=80)
+
+if __name__ == "__main__":
+    main()

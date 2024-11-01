@@ -1,0 +1,4 @@
+when in a *.py file, always use typehints, docstrings, prefer stateless code,
+when in a *.md file, replace ``` with """ for writing code blocks
+when writing documentation, write at a gride 7 literacy level
+when in composer or chat, give me follow up actions proposal in J K L hotkeys, so I can respond very quickly

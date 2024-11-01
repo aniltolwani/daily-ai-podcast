@@ -1,0 +1,7 @@
+[build]
+builder = "nixpacks"
+buildCommand = "pip install -e ."
+
+[deploy]
+startCommand = "python -m daily_ai_podcast.main"
+restartPolicyType = "on_failure"

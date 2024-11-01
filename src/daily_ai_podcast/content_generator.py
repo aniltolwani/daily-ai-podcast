@@ -2,6 +2,7 @@ from typing import List
 from playwright.async_api import async_playwright
 import os
 import asyncio
+from browserbase import Browserbase
 
 BROWSERBASE_API_KEY = os.environ.get("BROWSERBASE_API_KEY", None)
 NOTEBOOKLM_EMAIL = os.environ.get("NOTEBOOKLM_EMAIL")
@@ -18,49 +19,60 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
     Returns:
         str: File path to the generated audio summary
     """
+    # Initialize BrowserBase client
+    bb = Browserbase(api_key=BROWSERBASE_API_KEY)
+    
+    # Create a new session
+    session = bb.sessions.create()
+    
     async with async_playwright() as p:
-        browser = await p.chromium.connect_over_cdp(f"wss://connect.browserbase.com?apiKey={BROWSERBASE_API_KEY}")
+        # Connect to the remote session using the connect URL
+        browser = await p.chromium.connect_over_cdp(session.connect_url)
         context = (await browser.contexts())[0]
         page = (await context.pages())[0]
 
-        # Login to NotebookLM
-        await page.goto('https://notebooklm.google.com/')
-        await page.wait_for_load_state('networkidle')
-        await page.locator('#identifierId').fill(NOTEBOOKLM_EMAIL)
-        await page.locator('button:has-text("Next")').first.click()
-        await page.wait_for_selector('input[type="password"]', timeout=5000)
-        await page.locator('input[type="password"]').fill(NOTEBOOKLM_PASSWORD)
-        
-        # Add website
-        await page.wait_for_selector('mat-chip:has-text("Website")')
-        await page.locator('mat-chip:has-text("Website")').first.click()
-        await page.wait_for_selector('input[formcontrolname="newUrl"]')
-        await page.locator('input[formcontrolname="newUrl"]').fill(paper_link)
-        await page.wait_for_selector('button:has-text("Insert")')
-        await page.locator('button:has-text("Insert")').first.click()
+        try:
+            # Login to NotebookLM
+            await page.goto('https://notebooklm.google.com/')
+            await page.wait_for_load_state('networkidle')
+            await page.locator('#identifierId').fill(NOTEBOOKLM_EMAIL)
+            await page.locator('button:has-text("Next")').click()
+            await page.wait_for_selector('input[type="password"]', timeout=5000)
+            await page.locator('input[type="password"]').fill(NOTEBOOKLM_PASSWORD)
+            
+            # Add website
+            await page.wait_for_selector('mat-chip:has-text("Website")')
+            await page.locator('mat-chip:has-text("Website")').click()
+            await page.wait_for_selector('input[formcontrolname="newUrl"]')
+            await page.locator('input[formcontrolname="newUrl"]').fill(paper_link)
+            await page.wait_for_selector('button:has-text("Insert")')
+            await page.locator('button:has-text("Insert")').click()
 
-        # Generate summary
-        await page.wait_for_selector('button:has-text("Generate")')
-        await page.locator('button:has-text("Generate")').first.click()
+            # Generate summary
+            await page.wait_for_selector('button:has-text("Generate")')
+            await page.locator('button:has-text("Generate")').click()
 
-        # Wait for generation (5 minutes)
-        await asyncio.sleep(300)
+            # Wait for generation (5 minutes)
+            await asyncio.sleep(300)
 
-        # Download audio
-        await page.wait_for_selector('button mat-icon:has-text("more_vert")')
-        await page.locator('button mat-icon:has-text("more_vert")').first.click()
-        await page.locator('a mat-icon:has-text("download")').first.click()
+            # Download audio
+            await page.wait_for_selector('button mat-icon:has-text("more_vert")')
+            await page.locator('button mat-icon:has-text("more_vert")').click()
+            await page.locator('a mat-icon:has-text("download")').click()
 
-        output_path = f"summary_{index}.mp3"
-        
-        # Handle download
-        async def handle_download(download):
-            await download.save_as(output_path)
+            output_path = f"summary_{index}.mp3"
+            
+            # Handle download
+            async def handle_download(download):
+                await download.save_as(output_path)
 
-        page.on('download', handle_download)
-        await browser.close()
-        
-        return output_path
+            page.on('download', handle_download)
+            return output_path
+            
+        finally:
+            await browser.close()
+            # Clean up BrowserBase session
+            bb.sessions.delete(session.id)
 
 async def generate_audio_summaries(paper_links: List[str]) -> List[str]:
     """

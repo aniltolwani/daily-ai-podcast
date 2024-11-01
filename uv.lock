@@ -39,6 +39,23 @@ wheels = [
 ]
 
 [[package]]
+name = "browserbase"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/73/c6/300ec243050297e5b07be881acc1f1a08445f7572a939a9a89393fe2d1fd/browserbase-1.0.0.tar.gz", hash = "sha256:f468b791a1718b4807c13feee1e792e64b114550021e0c3e6b86270142c85c93", size = 110699 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/27/61/ba6574dd37afdaed820bd5d983d7e4dd7fc03dbd6443fe69dfc6dbdb5351/browserbase-1.0.0-py3-none-any.whl", hash = "sha256:f3c9c29e312ac55a848355aa71095ac23510be93deb79bae48759ad61116117e", size = 93942 },
+]
+
+[[package]]
 name = "certifi"
 version = "2024.8.30"
 source = { registry = "https://pypi.org/simple" }
@@ -143,6 +160,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "asyncio" },
+    { name = "browserbase" },
     { name = "fastapi", extra = ["standard"] },
     { name = "playwright" },
     { name = "pydub" },
@@ -154,12 +172,22 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "asyncio", specifier = ">=3.4.3" },
+    { name = "browserbase", specifier = ">=1.0.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.4" },
     { name = "playwright", specifier = ">=1.35.0" },
     { name = "pydub", specifier = ">=0.25.1" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "ruff", specifier = ">=0.7.2" },
+]
+
+[[package]]
+name = "distro"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/f8/98eea607f65de6527f8a2e8885fc8015d3e6f5775df186e443e0964a11c3/distro-1.9.0.tar.gz", hash = "sha256:2fa77c6fd8940f116ee1d6b94a2f90b13b5ea8d019b98bc8bafdcabcdd9bdbed", size = 60722 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/b3/231ffd4ab1fc9d679809f356cebee130ac7daa00d6d6f3206dd4fd137e9e/distro-1.9.0-py3-none-any.whl", hash = "sha256:7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2", size = 20277 },
 ]
 
 [[package]]

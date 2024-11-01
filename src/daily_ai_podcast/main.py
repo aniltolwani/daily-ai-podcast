@@ -5,6 +5,7 @@ import uvicorn
 from daily_ai_podcast.content_generator import generate_audio_summaries
 
 import logging
+import asyncio
 
 # Configure the logger
 logging.basicConfig(level=logging.INFO)
@@ -30,50 +31,41 @@ async def process_email_webhook(data: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Response with processing status
     """
-    print(f"Received data: {data}")  # Log the incoming data for debugging
-    logger.info(f"Received data: {data}")
-    # Rest of your function...
-
+    logger.info(f"Received webhook data: {data}")
+    
     # Basic payload validation
     if 'body_plain' not in data:
+        logger.error("Missing email body in webhook data")
         raise HTTPException(status_code=400, detail="Missing email body")
     
     # Extract paper links
     paper_links = extract_paper_links(data['body_plain'])
     if not paper_links:
+        logger.info("No paper links found in email body")
         return {"status": "success", "message": "No paper links found"}
 
-    # Log paper links for debugging
-    print(f"Extracted paper links: {paper_links}")
+    # Log extracted links
+    logger.info(f"Found {len(paper_links)} paper links: {paper_links}")
 
+    try:
+        # Generate summaries
+        logger.info("Starting audio summary generation...")
+        audio_files = await generate_audio_summaries(paper_links)
+        logger.info(f"Successfully generated {len(audio_files)} audio summaries: {audio_files}")
 
-    # Generate summaries
-    audio_files = generate_audio_summaries(paper_links)
-
-    return {"status": "success", "paper_links": paper_links, "audio_files": audio_files}
-
-    # # Merge audio files
-    # final_podcast = merge_audio_files(audio_files)
-
-    # # Initialize publisher
-    # publisher = PodcastPublisher(
-    #     github_repo=os.getenv("GITHUB_REPO"),
-    #     github_token=os.getenv("GITHUB_TOKEN")
-    # )
-
-    # # Generate title and description
-    # title = f"AI Papers Summary - {datetime.now().strftime('%B %d, %Y')}"
-    # description = f"Summary of {len(paper_links)} AI research papers from arXiv"
-
-    # # Publish podcast
-    # success = publisher.publish_podcast(final_podcast, title, description)
-    
-    # return {
-    #     "status": "success" if success else "error",
-    #     "message": "Podcast published" if success else "Failed to publish podcast",
-    #     "paper_count": len(paper_links),
-    #     "audio_files": len(audio_files)
-    # }
+        return {
+            "status": "success", 
+            "paper_links": paper_links, 
+            "audio_files": audio_files,
+            "message": f"Generated {len(audio_files)} audio summaries"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating audio summaries: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate audio summaries: {str(e)}"
+        )
 
 def extract_paper_links(email_body: str) -> List[str]:
     """

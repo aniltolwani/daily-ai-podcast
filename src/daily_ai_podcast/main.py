@@ -1,11 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from typing import Dict, Any, List
-import os
-from content_generator import generate_audio_summaries
-from audio_processor import merge_audio_files
-from publisher import PodcastPublisher
 from dotenv import load_dotenv
-from datetime import datetime
 
 load_dotenv()
 

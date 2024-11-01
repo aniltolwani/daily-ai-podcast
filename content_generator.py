@@ -4,6 +4,8 @@ import os
 import time
 
 BROWSERBASE_API_KEY = os.environ.get("BROWSERBASE_API_KEY", None)
+NOTEBOOKLM_EMAIL = os.environ.get("NOTEBOOKLM_EMAIL")
+NOTEBOOKLM_PASSWORD = os.environ.get("NOTEBOOKLM_PASSWORD")
 
 def generate_audio_summaries(paper_links: List[str]) -> List[str]:
     """
@@ -25,10 +27,10 @@ def generate_audio_summaries(paper_links: List[str]) -> List[str]:
         # Login to NotebookLM
         page.goto('https://notebooklm.google.com/')
         page.wait_for_load_state('networkidle')
-        page.locator('#identifierId').fill('anilnotebooklm@gmail.com')
+        page.locator('#identifierId').fill(NOTEBOOKLM_EMAIL)
         page.locator('button:has-text("Next")').first.click()
         page.wait_for_selector('input[type="password"]', timeout=5000)
-        page.locator('input[type="password"]').fill('notebooklm')
+        page.locator('input[type="password"]').fill(NOTEBOOKLM_PASSWORD)
         page.locator('button:has-text("Next")').first.click()
         page.wait_for_load_state('networkidle')
 
@@ -63,6 +65,8 @@ def generate_audio_summaries(paper_links: List[str]) -> List[str]:
             # For now, we'll use a placeholder
             audio_file_path = f"summary_{len(audio_files)}.mp3"
             audio_files.append(audio_file_path)
+
+            page.on('download', lambda download: download.save_as(f"summary_{len(audio_files)}.mp3"))
 
         browser.close()
 

@@ -3,7 +3,11 @@ from typing import Dict, Any, List
 import os
 from content_generator import generate_audio_summaries
 from audio_processor import merge_audio_files
-from publisher import publish_podcast
+from publisher import publish_podcast, PodcastPublisher
+from dotenv import load_dotenv
+from datetime import datetime
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -40,8 +44,18 @@ async def process_email_webhook(data: Dict[str, Any]) -> Dict[str, Any]:
     # Merge audio files
     final_podcast = merge_audio_files(audio_files)
 
+    # Initialize publisher
+    publisher = PodcastPublisher(
+        github_repo=os.getenv("GITHUB_REPO"),
+        github_token=os.getenv("GITHUB_TOKEN")
+    )
+
+    # Generate title and description
+    title = f"AI Papers Summary - {datetime.now().strftime('%B %d, %Y')}"
+    description = f"Summary of {len(paper_links)} AI research papers from arXiv"
+
     # Publish podcast
-    success = publish_podcast(final_podcast)
+    success = publisher.publish_podcast(final_podcast, title, description)
     
     return {
         "status": "success" if success else "error",

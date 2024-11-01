@@ -22,6 +22,8 @@ def generate_audio_summaries(paper_links: List[str]) -> List[str]:
         context = browser.contexts()[0]
         page = context.pages()[0]
 
+
+
         # Login to NotebookLM
         page.goto('https://notebooklm.google.com/')
         page.wait_for_load_state('networkidle')

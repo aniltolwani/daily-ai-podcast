@@ -3,6 +3,12 @@ from typing import Dict, Any, List
 from dotenv import load_dotenv
 import uvicorn
 
+import logging
+
+# Configure the logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 app = FastAPI()
@@ -23,6 +29,10 @@ async def process_email_webhook(data: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Response with processing status
     """
+    print(f"Received data: {data}")  # Log the incoming data for debugging
+    logger.info(f"Received data: {data}")
+    # Rest of your function...
+
     # Basic payload validation
     if 'body_plain' not in data:
         raise HTTPException(status_code=400, detail="Missing email body")

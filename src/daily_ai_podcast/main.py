@@ -31,7 +31,7 @@ async def process_email_webhook(data: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Response with processing status
     """
-    logger.info(f"Received webhook data: {data}")
+    # logger.info(f"Received webhook data: {data}")
     
     # Basic payload validation
     if 'body_plain' not in data:

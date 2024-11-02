@@ -61,7 +61,7 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
         await page.locator('a mat-icon:has-text("download")').click()
 
         output_path = f"summary_{index}.mp3"
-            
+    
         # Handle download
         # async def handle_download(download):
         #     await download.save_as(output_path)
@@ -70,16 +70,17 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
         return output_path
 async def generate_audio_summaries(paper_links: List[str]) -> List[str]:
     """
-    Generate audio summaries for the given paper links using NotebookLM in parallel.
+    Generate audio summary for the first paper link using NotebookLM.
 
     Args:
         paper_links (List[str]): A list of URLs for the papers to summarize.
+                                Only the first paper will be processed.
 
     Returns:
-        List[str]: A list of file paths to the generated audio summaries.
+        List[str]: A list containing a single file path to the generated audio summary.
     """
-    tasks = [
-        generate_single_summary(link, idx) 
-        for idx, link in enumerate(paper_links)
-    ]
-    return await asyncio.gather(*tasks)
+    if not paper_links:
+        return []
+    
+    result = await generate_single_summary(paper_links[0], 0)
+    return [result]

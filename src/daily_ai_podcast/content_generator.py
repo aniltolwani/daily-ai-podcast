@@ -3,6 +3,10 @@ from playwright.async_api import async_playwright
 import os
 import asyncio
 from browserbase import Browserbase
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 BROWSERBASE_API_KEY = os.environ.get("BROWSERBASE_API_KEY", None)
 NOTEBOOKLM_EMAIL = os.environ.get("NOTEBOOKLM_EMAIL")
@@ -33,6 +37,7 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
         page = context.pages[0]
 
         # Login to NotebookLM
+        logger.info("Logging in to NotebookLM...")
         await page.goto('https://notebooklm.google.com/')
         await page.wait_for_load_state('networkidle')
         await page.locator('#identifierId').fill(NOTEBOOKLM_EMAIL)
@@ -41,6 +46,7 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
         await page.locator('input[type="password"]').fill(NOTEBOOKLM_PASSWORD)
 
         # Add website
+        logger.info("Adding website to NotebookLM...")
         await page.wait_for_selector('mat-chip:has-text("Website")')
         await page.locator('mat-chip:has-text("Website")').click()
         await page.wait_for_selector('input[formcontrolname="newUrl"]')
@@ -49,13 +55,16 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
         await page.locator('button:has-text("Insert")').click()
 
         # Generate summary
+        logger.info("Generating summary...")
         await page.wait_for_selector('button:has-text("Generate")')
         await page.locator('button:has-text("Generate")').click()
 
-            # Wait for generation (5 minutes)
+        # Wait for generation (5 minutes)
+        logger.info("Waiting for generation...")
         await asyncio.sleep(300)
 
         # Download audio
+        logger.info("Downloading audio...")
         await page.wait_for_selector('button mat-icon:has-text("more_vert")')
         await page.locator('button mat-icon:has-text("more_vert")').click()
         await page.locator('a mat-icon:has-text("download")').click()

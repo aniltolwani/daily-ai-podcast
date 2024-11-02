@@ -22,14 +22,15 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
     # Initialize BrowserBase client
     bb = Browserbase(api_key=BROWSERBASE_API_KEY)
     
-    # Create a new session
-    session = bb.sessions.create()
-    
-    async with async_playwright() as p:
+    # Create a new session using BrowserBase
+    session = bb.sessions.create(project_id="f525ba7a-7f52-478a-81d7-6e198ebea369")
+
+    with async_playwright() as playwright:
         # Connect to the remote session using the connect URL
-        browser = await p.chromium.connect_over_cdp(session.connect_url)
-        context = (await browser.contexts())[0]
-        page = (await context.pages())[0]
+        chromium = playwright.chromium
+        browser = chromium.connect_over_cdp(session.connect_url)
+        context = browser.contexts[0]
+        page = context.pages[0]
 
         try:
             # Login to NotebookLM
@@ -63,14 +64,15 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
             output_path = f"summary_{index}.mp3"
             
             # Handle download
-            async def handle_download(download):
-                await download.save_as(output_path)
+            # async def handle_download(download):
+            #     await download.save_as(output_path)
 
-            page.on('download', handle_download)
+            # page.on('download', handle_download)
             return output_path
             
         finally:
             await browser.close()
+            print(f"Done! View replay at https://browserbase.com/sessions/{session.id}")
             # Clean up BrowserBase session
             bb.sessions.delete(session.id)
 

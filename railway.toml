@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "pip install -e ."
+buildCommand = "pip install -e . && pip install 'playwright>=1.35.0' && playwright install chromium"
 
 [deploy]
 startCommand = "python -m daily_ai_podcast.main"

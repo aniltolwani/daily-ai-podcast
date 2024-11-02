@@ -29,7 +29,7 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
     # Create a new session using BrowserBase
     session = bb.sessions.create(project_id="f525ba7a-7f52-478a-81d7-6e198ebea369")
 
-    with async_playwright() as playwright:
+    async with async_playwright() as playwright:
         # Connect to the remote session using the connect URL
         chromium = playwright.chromium
         browser = chromium.connect_over_cdp(session.connect_url)

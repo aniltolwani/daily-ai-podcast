@@ -32,7 +32,7 @@ async def generate_single_summary(paper_link: str, index: int) -> str:
     async with async_playwright() as playwright:
         # Connect to the remote session using the connect URL
         chromium = playwright.chromium
-        browser = chromium.connect_over_cdp(session.connect_url)
+        browser = chromium.connect_over_cdp('wss://connect.browserbase.com?apiKey='+ BROWSERBASE_API_KEY)
         context = browser.contexts[0]
         page = context.pages[0]
 
